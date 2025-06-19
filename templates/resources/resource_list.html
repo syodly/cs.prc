@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}资源列表 - 网络资源分享平台{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>资源列表</h2>
+            {% if current_type %}
+                <h5 class="text-muted">
+                    当前分类：
+                    {% if current_type == 'book' %}电子图书
+                    {% elif current_type == 'exam' %}试卷资源
+                    {% elif current_type == 'textbook' %}电子教材
+                    {% endif %}
+                </h5>
+            {% endif %}
+        </div>
+        <div class="col-md-4">
+            <form method="get" class="d-flex">
+                <input type="text" name="q" class="form-control me-2" placeholder="搜索资源..." value="{{ request.GET.q }}">
+                {% if current_type %}
+                    <input type="hidden" name="type" value="{{ current_type }}">
+                {% endif %}
+                <button type="submit" class="btn btn-outline-primary">搜索</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- 侧边栏：资源分类 -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    资源分类
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'resources:resource_list' %}" 
+                       class="list-group-item list-group-item-action {% if not current_type %}active{% endif %}">
+                        全部资源
+                    </a>
+                    <a href="{% url 'resources:resource_list' %}?type=book" 
+                       class="list-group-item list-group-item-action {% if current_type == 'book' %}active{% endif %}">
+                        电子图书
+                    </a>
+                    <a href="{% url 'resources:resource_list' %}?type=exam" 
+                       class="list-group-item list-group-item-action {% if current_type == 'exam' %}active{% endif %}">
+                        试卷资源
+                    </a>
+                    <a href="{% url 'resources:resource_list' %}?type=textbook" 
+                       class="list-group-item list-group-item-action {% if current_type == 'textbook' %}active{% endif %}">
+                        电子教材
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主要内容：资源列表 -->
+        <div class="col-md-9">
+            {% if resources %}
+                <div class="row">
+                    {% for resource in resources %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                {% if resource.cover_image %}
+                                    <img src="{{ resource.cover_image.url }}" class="card-img-top" alt="{{ resource.title }}">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ resource.title }}</h5>
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            {{ resource.get_resource_type_display }} | 
+                                            下载次数: {{ resource.download_count }}
+                                        </small>
+                                    </p>
+                                    <p class="card-text">{{ resource.description|truncatewords:30 }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <a href="{% url 'resources:resource_detail' resource.pk %}" 
+                                           class="btn btn-sm btn-primary">查看详情</a>
+                                        {% if user.is_authenticated %}
+                                            <a href="{% url 'resources:resource_download' resource.pk %}" 
+                                               class="btn btn-sm btn-success">下载</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <small class="text-muted">
+                                        上传时间: {{ resource.upload_date|date:"Y-m-d" }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    暂无资源{% if current_type %}在当前分类下{% endif %}。
+                    {% if user.is_staff %}
+                        <a href="{% url 'resources:resource_create' %}" class="alert-link">立即上传</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

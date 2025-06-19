@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">{{ title }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <p>{{ field.label }}: {{ error }}</p>
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">书名</label>
+                            {{ form.title }}
+                            {% if form.title.help_text %}
+                                <div class="form-text">{{ form.title.help_text }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.authors.id_for_label }}" class="form-label">作者</label>
+                            {{ form.authors }}
+                            {% if form.authors.help_text %}
+                                <div class="form-text">{{ form.authors.help_text }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.isbn.id_for_label }}" class="form-label">ISBN</label>
+                            {{ form.isbn }}
+                            {% if form.isbn.help_text %}
+                                <div class="form-text">{{ form.isbn.help_text }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.publisher.id_for_label }}" class="form-label">出版社</label>
+                            {{ form.publisher }}
+                            {% if form.publisher.help_text %}
+                                <div class="form-text">{{ form.publisher.help_text }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.publication_date.id_for_label }}" class="form-label">出版日期</label>
+                            {{ form.publication_date }}
+                            {% if form.publication_date.help_text %}
+                                <div class="form-text">{{ form.publication_date.help_text }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.introduction.id_for_label }}" class="form-label">简介</label>
+                            {{ form.introduction }}
+                            {% if form.introduction.help_text %}
+                                <div class="form-text">{{ form.introduction.help_text }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.cover.id_for_label }}" class="form-label">封面图片</label>
+                            {{ form.cover }}
+                            {% if form.cover.help_text %}
+                                <div class="form-text">{{ form.cover.help_text }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.quantity.id_for_label }}" class="form-label">库存数量</label>
+                            {{ form.quantity }}
+                            {% if form.quantity.help_text %}
+                                <div class="form-text">{{ form.quantity.help_text }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">保存</button>
+                            <a href="{% url 'books:book_list' %}" class="btn btn-outline-secondary">取消</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

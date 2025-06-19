@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}编辑资源{% else %}上传资源{% endif %} - 网络资源分享平台{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas {% if form.instance.pk %}fa-edit{% else %}fa-upload{% endif %} me-2"></i>
+                        {% if form.instance.pk %}编辑资源{% else %}上传新资源{% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <!-- 标题 -->
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">资源标题</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.title.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 资源类型 -->
+                        <div class="mb-3">
+                            <label for="{{ form.resource_type.id_for_label }}" class="form-label">资源类型</label>
+                            {{ form.resource_type }}
+                            {% if form.resource_type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.resource_type.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 作者/出版社 -->
+                        <div class="mb-3">
+                            <label for="{{ form.author.id_for_label }}" class="form-label">作者/出版社</label>
+                            {{ form.author }}
+                            {% if form.author.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.author.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 分类 -->
+                        <div class="mb-3">
+                            <label for="{{ form.category.id_for_label }}" class="form-label">分类</label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.category.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 描述 -->
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">资源描述</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.description.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">请详细描述资源的内容、特点和用途</div>
+                        </div>
+
+                        <!-- 标签 -->
+                        <div class="mb-3">
+                            <label for="{{ form.tags.id_for_label }}" class="form-label">标签</label>
+                            {{ form.tags }}
+                            {% if form.tags.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.tags.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">多个标签请用空格分隔</div>
+                        </div>
+
+                        <!-- 封面图片 -->
+                        <div class="mb-3">
+                            <label for="{{ form.cover_image.id_for_label }}" class="form-label">封面图片</label>
+                            {% if form.instance.cover_image %}
+                                <div class="mb-2">
+                                    <img src="{{ form.instance.cover_image.url }}" alt="当前封面" class="img-thumbnail" style="max-height: 200px;">
+                                </div>
+                            {% endif %}
+                            {{ form.cover_image }}
+                            {% if form.cover_image.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.cover_image.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">支持 JPG、PNG 格式，建议尺寸 800x600 像素</div>
+                        </div>
+
+                        <!-- 资源文件 -->
+                        <div class="mb-3">
+                            <label for="{{ form.file.id_for_label }}" class="form-label">资源文件</label>
+                            {% if form.instance.file %}
+                                <div class="mb-2">
+                                    <p class="mb-1">当前文件: {{ form.instance.file.name }}</p>
+                                </div>
+                            {% endif %}
+                            {{ form.file }}
+                            {% if form.file.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.file.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">支持 PDF、DOC、DOCX、PPT、PPTX 等常用格式</div>
+                        </div>
+
+                        {% if user.is_staff %}
+                        <!-- 管理员选项 -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="mb-0">管理员选项</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check mb-2">
+                                    {{ form.is_featured }}
+                                    <label class="form-check-label" for="{{ form.is_featured.id_for_label }}">
+                                        设为推荐资源
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                        资源可用
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'resources:resource_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>返回列表
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas {% if form.instance.pk %}fa-save{% else %}fa-upload{% endif %} me-1"></i>
+                                {% if form.instance.pk %}保存更改{% else %}上传资源{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+// 为表单字段添加 Bootstrap 类
+document.addEventListener('DOMContentLoaded', function() {
+    const formControls = document.querySelectorAll('input, select, textarea');
+    formControls.forEach(control => {
+        if (!control.classList.contains('form-check-input')) {
+            control.classList.add('form-control');
+        }
+        if (control.type === 'file') {
+            control.classList.add('form-control-file');
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %} 

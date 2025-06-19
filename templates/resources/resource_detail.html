@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ resource.title }} - 网络资源分享平台{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                {% if resource.cover_image %}
+                    <img src="{{ resource.cover_image.url }}" class="card-img-top" alt="{{ resource.title }}">
+                {% endif %}
+                <div class="card-body">
+                    <h2 class="card-title">{{ resource.title }}</h2>
+                    <p class="text-muted">
+                        {{ resource.get_resource_type_display }} | 
+                        上传时间: {{ resource.upload_date|date:"Y-m-d" }} | 
+                        下载次数: {{ resource.download_count }}
+                    </p>
+                    <hr>
+                    <h5>资源描述</h5>
+                    <p class="card-text">{{ resource.description|linebreaks }}</p>
+                    
+                    {% if resource.tags %}
+                    <h5>标签</h5>
+                    <p>
+                        {% for tag in resource.tags.split %} 
+                            <span class="badge bg-secondary">{{ tag }}</span>
+                        {% endfor %}
+                    </p>
+                    {% endif %}
+
+                    <div class="mt-4">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'resources:resource_download' resource.pk %}" 
+                               class="btn btn-success">下载资源</a>
+                            {% if user.is_staff %}
+                                <a href="{% url 'resources:resource_edit' resource.pk %}" 
+                                   class="btn btn-primary">编辑</a>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                    删除
+                                </button>
+                            {% endif %}
+                        {% else %}
+                            <div class="alert alert-warning">
+                                请<a href="{% url 'users:login' %}">登录</a>后下载资源
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    资源信息
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>作者/出版社：</strong> {{ resource.author }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>分类：</strong> {{ resource.category }}
+                    </li>
+                    {% if user.is_authenticated and not user.is_staff %}
+                    <li class="list-group-item">
+                        <strong>今日剩余下载次数：</strong> {{ user.download_limit }}
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            {% if user.is_staff %}
+            <div class="card">
+                <div class="card-header">
+                    管理选项
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'resources:resource_edit' resource.pk %}">
+                        {% csrf_token %}
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="is_featured" 
+                                   id="id_is_featured" {% if resource.is_featured %}checked{% endif %}>
+                            <label class="form-check-label" for="id_is_featured">
+                                设为推荐资源
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="is_active" 
+                                   id="id_is_active" {% if resource.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="id_is_active">
+                                资源可用
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">保存更改</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if user.is_staff %}
+<!-- 删除确认对话框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">确认删除</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>确定要删除资源"{{ resource.title }}"吗？此操作不可恢复。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <form method="post" action="{% url 'resources:resource_delete' resource.pk %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">确认删除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

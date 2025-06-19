@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}我的借阅 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">我的借阅</h2>
+    
+    <!-- 当前借阅 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">当前借阅</h4>
+        </div>
+        <div class="card-body">
+            {% if active_borrowings %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>书名</th>
+                                <th>借阅日期</th>
+                                <th>应还日期</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for borrow in active_borrowings %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'books:book_detail' borrow.book.pk %}">
+                                            {{ borrow.book.title }}
+                                        </a>
+                                    </td>
+                                    <td>{{ borrow.borrow_date|date:"Y-m-d" }}</td>
+                                    <td>{{ borrow.due_date|date:"Y-m-d" }}</td>
+                                    <td>
+                                        {% if borrow.is_overdue %}
+                                            <span class="badge bg-danger">已逾期</span>
+                                        {% else %}
+                                            <span class="badge bg-primary">借阅中</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <form method="post" action="{% url 'borrowing:return_book' borrow.pk %}" style="display: inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-primary">归还</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>暂无当前借阅的图书</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 借阅历史 -->
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">借阅历史</h4>
+        </div>
+        <div class="card-body">
+            {% if history_borrowings %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>书名</th>
+                                <th>借阅日期</th>
+                                <th>归还日期</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for borrow in history_borrowings %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'books:book_detail' borrow.book.pk %}">
+                                            {{ borrow.book.title }}
+                                        </a>
+                                    </td>
+                                    <td>{{ borrow.borrow_date|date:"Y-m-d" }}</td>
+                                    <td>{{ borrow.return_date|date:"Y-m-d" }}</td>
+                                    <td>
+                                        <span class="badge bg-success">已归还</span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>暂无借阅历史记录</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

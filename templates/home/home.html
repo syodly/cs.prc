@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}首页 - 网络资源分享平台{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- 欢迎横幅 -->
+    <div class="card mb-4">
+        <div class="card-body text-center py-5" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+            <h1 class="display-4 text-white mb-3">欢迎来到网络资源分享平台</h1>
+            <p class="lead text-white mb-4">发现、分享和下载优质学习资源</p>
+            {% if not user.is_authenticated %}
+                <div>
+                    <a href="{% url 'users:register' %}" class="btn btn-light btn-lg me-2">
+                        <i class="fas fa-user-plus me-2"></i>立即注册
+                    </a>
+                    <a href="{% url 'users:login' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>登录
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 资源分类区 -->
+    <h2 class="mb-4"><i class="fas fa-th-large me-2"></i>资源分类</h2>
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <a href="{% url 'resources:resource_list' %}?type=book" class="text-decoration-none">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-book fa-3x mb-3" style="color: var(--primary-color);"></i>
+                        <h3 class="card-title h4">电子图书</h3>
+                        <p class="card-text text-muted">包含各类电子书籍，满足您的阅读需求</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'resources:resource_list' %}?type=exam" class="text-decoration-none">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-file-alt fa-3x mb-3" style="color: var(--primary-color);"></i>
+                        <h3 class="card-title h4">试卷资源</h3>
+                        <p class="card-text text-muted">历年考试真题及模拟试卷</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'resources:resource_list' %}?type=textbook" class="text-decoration-none">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-graduation-cap fa-3x mb-3" style="color: var(--primary-color);"></i>
+                        <h3 class="card-title h4">电子教材</h3>
+                        <p class="card-text text-muted">专业课程教材和学习资料</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- 最新公告 -->
+    {% if announcements %}
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="mb-4"><i class="fas fa-bullhorn me-2"></i>最新公告</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for announcement in announcements %}
+                            <div class="list-group-item border-0 py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-1">{{ announcement.title }}</h5>
+                                    <small class="text-muted">{{ announcement.created_at|date:"Y-m-d" }}</small>
+                                </div>
+                                <p class="mb-1 text-muted">{{ announcement.content }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 推荐资源 -->
+    {% if featured_resources %}
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4"><i class="fas fa-star me-2"></i>推荐资源</h2>
+            <div class="row g-4">
+                {% for resource in featured_resources %}
+                    <div class="col-md-4">
+                        <div class="card h-100 resource-card">
+                            {% if resource.cover_image %}
+                                <img src="{{ resource.cover_image.url }}" class="card-img-top" alt="{{ resource.title }}">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ resource.title }}</h5>
+                                <p class="card-text text-muted">{{ resource.description|truncatewords:20 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-primary">{{ resource.get_resource_type_display }}</span>
+                                    <small class="text-muted">下载次数: {{ resource.download_count }}</small>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <a href="{% url 'resources:resource_detail' resource.pk %}" class="btn btn-primary w-100">
+                                    <i class="fas fa-info-circle me-1"></i>查看详情
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
