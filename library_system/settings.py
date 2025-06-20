@@ -71,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.resources.context_processors.pending_resources_count',
             ],
         },
     },
@@ -92,7 +93,7 @@ DATABASES = {
         'PORT': '3306',           # MySQL默认端口
         'OPTIONS': {
             'charset': 'utf8mb4',  # 使用utf8mb4字符集
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",  # 设置SQL模式
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'; SET time_zone = '+08:00';",  # 设置SQL模式和时区
         }
     }
 }
@@ -126,7 +127,7 @@ TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

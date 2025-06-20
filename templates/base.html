@@ -124,6 +124,15 @@
             font-weight: 500;
         }
 
+        /* 审核资源徽章样式 */
+        .badge.bg-danger {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            border-radius: 0.5rem;
+            margin-left: 0.25rem;
+            vertical-align: middle;
+        }
+
         footer {
             margin-top: auto;
             padding: 2rem 0;
@@ -202,14 +211,28 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if 'resources' in request.path %}active{% endif %}" href="{% url 'resources:resource_list' %}">
+                        <a class="nav-link {% if 'resources' in request.path and 'create' not in request.path and 'pending' not in request.path %}active{% endif %}" href="{% url 'resources:resource_list' %}">
                             <i class="fas fa-book me-1"></i>资源列表
                         </a>
                     </li>
                     {% if user.is_authenticated %}
                         {% if user.is_staff %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'resources:resource_create' %}">
+                            <a class="nav-link {% if 'resources/create' in request.path %}active{% endif %}" href="{% url 'resources:resource_create' %}">
+                                <i class="fas fa-upload me-1"></i>上传资源
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'resources/pending' in request.path %}active{% endif %}" href="{% url 'resources:pending_resources' %}">
+                                <i class="fas fa-tasks me-1"></i>审核资源
+                                {% if pending_resources_count > 0 %}
+                                <span class="badge bg-danger">{{ pending_resources_count }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'resources/create' in request.path %}active{% endif %}" href="{% url 'resources:resource_create' %}">
                                 <i class="fas fa-upload me-1"></i>上传资源
                             </a>
                         </li>

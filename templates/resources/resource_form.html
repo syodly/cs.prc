@@ -146,7 +146,19 @@
                                         资源可用
                                     </label>
                                 </div>
+                                <div class="form-check">
+                                    {{ form.status }}
+                                    <label class="form-check-label" for="{{ form.status.id_for_label }}">
+                                        审核状态
+                                    </label>
+                                </div>
                             </div>
+                        </div>
+                        {% else %}
+                        <!-- 普通用户提示 -->
+                        <div class="alert alert-info mb-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            您上传的资源需要经过管理员审核后才能在平台上展示。请耐心等待审核结果。
                         </div>
                         {% endif %}
 

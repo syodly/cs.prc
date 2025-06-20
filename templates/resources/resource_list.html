@@ -3,10 +3,10 @@
 {% block title %}资源列表 - 网络资源分享平台{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-8">
-            <h2>资源列表</h2>
+            <h2 class="mb-0">资源列表</h2>
             {% if current_type %}
                 <h5 class="text-muted">
                     当前分类：
@@ -18,12 +18,18 @@
             {% endif %}
         </div>
         <div class="col-md-4">
-            <form method="get" class="d-flex">
-                <input type="text" name="q" class="form-control me-2" placeholder="搜索资源..." value="{{ request.GET.q }}">
-                {% if current_type %}
-                    <input type="hidden" name="type" value="{{ current_type }}">
-                {% endif %}
-                <button type="submit" class="btn btn-outline-primary">搜索</button>
+            <form method="get" class="search-form">
+                <div class="search-wrapper">
+                    <input type="text" 
+                           name="q" 
+                           class="search-input" 
+                           placeholder="搜索资源..." 
+                           value="{{ request.GET.q|default:'' }}"
+                           autocomplete="off">
+                    <button type="submit" class="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -150,6 +156,62 @@
     .card-footer {
         border-top: 1px solid rgba(0,0,0,.125);
         background-color: rgba(255,255,255,0.9) !important;
+    }
+    .search-form {
+        width: 100%;
+    }
+    .search-wrapper {
+        position: relative;
+        width: 100%;
+    }
+    .search-input {
+        width: 100%;
+        padding: 12px 45px 12px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 50px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background-color: white;
+        color: #333;
+    }
+    .search-input:focus {
+        outline: none;
+        border-color: #4a90e2;
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+    .search-input::placeholder {
+        color: #999;
+        transition: all 0.3s ease;
+    }
+    .search-input:focus::placeholder {
+        opacity: 0.7;
+    }
+    .search-button {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: none;
+        color: #666;
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .search-button:hover {
+        color: #4a90e2;
+    }
+    .search-button:focus {
+        outline: none;
+    }
+    @media (max-width: 768px) {
+        .search-input {
+            padding: 10px 40px 10px 15px;
+            font-size: 0.9rem;
+        }
+        .search-button {
+            padding: 6px 10px;
+        }
     }
 </style>
 {% endblock %} 

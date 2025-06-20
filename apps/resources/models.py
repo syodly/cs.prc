@@ -10,6 +10,11 @@ class Resource(models.Model):
         ('exam', '试卷资源'),
         ('textbook', '电子教材'),
     )
+    STATUS_CHOICES = (
+        ('pending', '待审核'),
+        ('approved', '已批准'),
+        ('rejected', '已拒绝'),
+    )
 
     title = models.CharField('标题', max_length=200)
     description = models.TextField('描述')
@@ -17,12 +22,14 @@ class Resource(models.Model):
     file = models.FileField('资源文件', upload_to='resources/%Y/%m/')
     cover_image = models.ImageField('封面图片', upload_to='resource_covers/', null=True, blank=True)
     author = models.CharField('作者/出版社', max_length=200)
+    uploader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name='上传者', related_name='uploaded_resources', null=True, blank=True)
     upload_date = models.DateTimeField('上传时间', default=timezone.now)
     download_count = models.IntegerField('下载次数', default=0)
     category = models.CharField('分类', max_length=100)
     tags = models.CharField('标签', max_length=200, help_text='使用逗号分隔多个标签', blank=True)
     is_featured = models.BooleanField('是否推荐', default=False)
-    is_active = models.BooleanField('是否可用', default=True)
+    is_active = models.BooleanField('是否可用', default=False)
+    status = models.CharField('状态', max_length=10, choices=STATUS_CHOICES, default='pending')
 
     class Meta:
         verbose_name = '资源'
