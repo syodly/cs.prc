@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
@@ -21,26 +21,17 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user_type = request.POST.get('user_type')
         
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
-            # 验证用户类型是否匹配
-            if user.user_type == user_type:
-                login(request, user)
-                messages.success(request, f'欢迎回来，{user.username}！')
-                return redirect('home')
-            else:
-                messages.error(request, '用户类型不匹配，请选择正确的用户类型。')
+            login(request, user)
+            messages.success(request, f'欢迎回来，{user.username}！')
+            return redirect('home:home')
         else:
             messages.error(request, '用户名或密码错误。')
     
     return render(request, 'users/login.html')
-
-def logout_view(request):
-    logout(request)
-    return redirect('users:login')
 
 def register_view(request):
     if request.method == 'POST':
@@ -49,7 +40,7 @@ def register_view(request):
             user = form.save()
             login(request, user)
             messages.success(request, '注册成功！')
-            return redirect('books:book_list')
+            return redirect('home:home')
     else:
         form = UserRegistrationForm()
     return render(request, 'users/register.html', {'form': form})

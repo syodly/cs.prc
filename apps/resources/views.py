@@ -2,7 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
-from django.http import HttpResponseForbidden, FileResponse
+from django.http import HttpResponseForbidden, FileResponse, HttpResponse
+import os
+import mimetypes
+from urllib.parse import quote
 from .models import Resource
 from .forms import ResourceForm
 
@@ -112,6 +115,31 @@ def resource_download(request, pk):
         ip_address=request.META.get('REMOTE_ADDR')
     )
     
-    # 返回文件
-    response = FileResponse(resource.file)
-    return response
+    # 获取文件路径和文件名
+    file_path = resource.file.path
+    original_filename = os.path.basename(resource.file.name)
+    
+    # 获取文件的MIME类型
+    content_type, encoding = mimetypes.guess_type(file_path)
+    if content_type is None:
+        content_type = 'application/octet-stream'
+    
+    # 打开文件并创建响应
+    try:
+        with open(file_path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type=content_type)
+            
+            # 添加下载头
+            response['Content-Disposition'] = f'attachment; filename*=UTF-8\'\'{quote(original_filename)}'
+            response['Content-Length'] = os.path.getsize(file_path)
+            
+            # 添加缓存控制头
+            response['Cache-Control'] = 'no-cache'
+            
+            return response
+    except FileNotFoundError:
+        messages.error(request, '文件不存在或已被删除')
+        return redirect('resources:resource_detail', pk=pk)
+    except Exception as e:
+        messages.error(request, f'下载出错：{str(e)}')
+        return redirect('resources:resource_detail', pk=pk)

@@ -1,15 +1,9 @@
 from django.contrib import admin
-from .models import Book, Category
+from .models import Resource
 
-@admin.register(Book)
-class BookAdmin(admin.ModelAdmin):
-    list_display = ['title', 'authors', 'isbn', 'publisher', 'quantity', 'created_at']
-    search_fields = ['title', 'authors', 'isbn']
-    list_filter = ['publisher', 'created_at']
-    date_hierarchy = 'created_at'
-
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['code', 'name', 'parent']
-    search_fields = ['code', 'name']
-    list_filter = ['parent']
+@admin.register(Resource)
+class ResourceAdmin(admin.ModelAdmin):
+    list_display = ['title', 'author', 'resource_type', 'category', 'download_count', 'upload_date', 'is_featured', 'is_active']
+    search_fields = ['title', 'author', 'description', 'tags']
+    list_filter = ['resource_type', 'category', 'is_featured', 'is_active']
+    date_hierarchy = 'upload_date'

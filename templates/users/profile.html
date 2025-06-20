@@ -15,16 +15,17 @@
                     <div class="col-md-6">
                         <p><strong>用户名：</strong> {{ user.username }}</p>
                         <p><strong>用户类型：</strong> 
-                            {% if user.user_type == 'student' %}
-                                学生
-                            {% elif user.user_type == 'teacher' %}
-                                教师
-                            {% elif user.user_type == 'admin' %}
-                                管理员
+                            {% if user.is_superuser %}
+                                超级管理员
+                            {% else %}
+                                {% if user.user_type == 'registered' %}
+                                    普通用户
+                                {% elif user.user_type == 'admin' %}
+                                    管理员
+                                {% endif %}
                             {% endif %}
                         </p>
-                        <p><strong>学号/工号：</strong> {{ user.student_id|default:"未设置" }}</p>
-                        <p><strong>最大借阅数量：</strong> {{ user.max_books }} 本</p>
+                        <p><strong>每日下载限制：</strong> {{ user.download_limit_display }}</p>
                     </div>
                 </div>
 
@@ -33,7 +34,7 @@
                     {{ form|crispy }}
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">保存修改</button>
-                        <a href="{% url 'books:book_list' %}" class="btn btn-outline-secondary">返回</a>
+                        <a href="{% url 'resources:resource_list' %}" class="btn btn-outline-secondary">返回</a>
                     </div>
                 </form>
             </div>

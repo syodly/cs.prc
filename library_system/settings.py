@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'apps.resources',
     'apps.users',
-    'apps.borrowing',
     'apps.home',
 ]
 
@@ -159,3 +158,10 @@ LOGOUT_REDIRECT_URL = '/users/login/'
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+# 阿里云OSS配置（暂时注释掉）
+# DEFAULT_FILE_STORAGE = 'django_oss_storage.backends.OssMediaStorage'
+# OSS_ACCESS_KEY_ID = 'your-access-key-id'  # 替换为您的AccessKeyId
+# OSS_ACCESS_KEY_SECRET = 'your-access-key-secret'  # 替换为您的AccessKeySecret
+# OSS_BUCKET_NAME = 'your-bucket-name'  # 替换为您的Bucket名称
+# OSS_ENDPOINT = 'your-endpoint'  # 替换为您的Endpoint

@@ -3,12 +3,20 @@
 {% block title %}{{ resource.title }} - 网络资源分享平台{% endblock %}
 
 {% block content %}
+<style>
+.resource-cover {
+    max-height: 800px;
+    object-fit: contain;
+    width: 100%;
+}
+</style>
+
 <div class="container">
     <div class="row">
         <div class="col-md-8">
             <div class="card">
                 {% if resource.cover_image %}
-                    <img src="{{ resource.cover_image.url }}" class="card-img-top" alt="{{ resource.title }}">
+                    <img src="{{ resource.cover_image.url }}" class="card-img-top resource-cover" alt="{{ resource.title }}">
                 {% endif %}
                 <div class="card-body">
                     <h2 class="card-title">{{ resource.title }}</h2>
@@ -32,8 +40,14 @@
 
                     <div class="mt-4">
                         {% if user.is_authenticated %}
-                            <a href="{% url 'resources:resource_download' resource.pk %}" 
-                               class="btn btn-success">下载资源</a>
+                            {% if user.is_staff or user.download_limit > 0 %}
+                                <a href="{% url 'resources:resource_download' resource.pk %}" 
+                                   class="btn btn-success">下载资源</a>
+                            {% else %}
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#downloadLimitModal">
+                                    下载资源
+                                </button>
+                            {% endif %}
                             {% if user.is_staff %}
                                 <a href="{% url 'resources:resource_edit' resource.pk %}" 
                                    class="btn btn-primary">编辑</a>
@@ -125,4 +139,23 @@
     </div>
 </div>
 {% endif %}
+
+<!-- 下载限制提示对话框 -->
+<div class="modal fade" id="downloadLimitModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">下载次数已达上限</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>您今日的下载次数已达到上限，请明天再来下载。</p>
+                <p class="text-muted">每位用户每天可下载20次资源。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">知道了</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %} 
